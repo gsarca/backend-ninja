@@ -60,4 +60,10 @@ public class ContactModel {
 	public ContactModel() {
 	}
 
+	@Override
+	public String toString() {
+		return "ContactModel [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + ", telephone="
+				+ telephone + ", city=" + city + "]";
+	}
+
 }

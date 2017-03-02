@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.udemy.constant.ViewConstant;
 import com.udemy.model.ContactModel;
@@ -27,12 +29,16 @@ public class ContactController {
 
 	@GetMapping("/cancel")
 	public String cancel() {
-		return ViewConstant.CONTACTS;
+		return "redirect:/contacts/showcontacts";
 	}
 
 	@GetMapping("/contactform")
-	public String redirectContactForm(Model model) {
-		model.addAttribute("contactModel", new ContactModel());
+	public String redirectContactForm(@RequestParam(name = "id", required = false) int id, Model model) {
+		ContactModel contactModel = new ContactModel();
+		if (id != 0) {
+			contactModel = contactService.findContactModelById(id);
+		}
+		model.addAttribute("contactModel", contactModel);
 		return ViewConstant.CONTACT_FORM;
 	}
 
@@ -45,7 +51,20 @@ public class ContactController {
 		} else {
 			model.addAttribute("result", 0);
 		}
-		return ViewConstant.CONTACTS;
+		return "redirect:/contacts/showcontacts";
+	}
+
+	@GetMapping("/showcontacts")
+	public ModelAndView showContacts() {
+		ModelAndView mav = new ModelAndView(ViewConstant.CONTACTS);
+		mav.addObject("contacts", contactService.listAllContacts());
+		return mav;
+	}
+
+	@GetMapping("/removecontact")
+	public ModelAndView removeContact(@RequestParam(name = "id", required = true) int id) {
+		contactService.removeContact(id);
+		return showContacts();
 	}
 
 }
